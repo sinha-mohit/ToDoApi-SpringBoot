@@ -2,6 +2,7 @@ package com.example.todoapispring.controller;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
 import com.example.todoapispring.Todo;
+import com.example.todoapispring.customAnnotation.TimeMonitor;
 import com.example.todoapispring.service.TodoService;
 import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,7 +38,9 @@ public class TodoController {
 
 
     @GetMapping
-    public ResponseEntity<List<Todo>> getTodos(@RequestParam(required = false) Boolean isCompleted) {
+    @TimeMonitor
+    public ResponseEntity<List<Todo>> getTodos(@RequestParam(required = false) Boolean isCompleted) throws InterruptedException {
+        Thread.sleep(1000);
         if(isCompleted != null) {
             List<Todo> tmpTodoList = new ArrayList<>();
             for(Todo todo : todoList) {
@@ -49,10 +52,12 @@ public class TodoController {
         }
 
         System.out.println("Incoming query params: " + isCompleted + " " + this.todoService.doSomething());
+        System.out.println("Incoming query params: " + isCompleted + " " + this.todoservice2.doSomething());
         return ResponseEntity.ok(todoList);
     }
 
     @PostMapping
+    @TimeMonitor
     public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
 
         /**
@@ -66,6 +71,7 @@ public class TodoController {
 
 
     @GetMapping("/{todoId}")
+    @TimeMonitor
     public ResponseEntity<?> getTodoById(@PathVariable Long todoId) {
         for (Todo todo : todoList) {
             if (todo.getId() == todoId) {
